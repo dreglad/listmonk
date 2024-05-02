@@ -202,7 +202,7 @@ Create a new campaign.
 | lists        | number\[\]  | Yes      | List IDs to send campaign to.                                                           |
 | from_email   | string    |          | 'From' email in campaign emails. Defaults to value from settings if not provided.       |
 | type         | string    | Yes      | Campaign type: 'regular' or 'optin'.                                                    |
-| content_type | string    | Yes      | Content type: 'richtext', 'html', 'markdown', 'plain'.                                  |
+| content_type | string    | Yes      | Content type: 'richtext', 'html', 'markdown', 'mjml', 'plain'.                          |
 | body         | string    | Yes      | Content body of campaign.                                                               |
 | altbody      | string    |          | Alternate plain text body for HTML (and richtext) emails.                               |
 | send_at      | string    |          | Timestamp to schedule campaign. Format: 'YYYY-MM-DDTHH:MM:SS'.                          |

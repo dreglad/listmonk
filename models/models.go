@@ -2,6 +2,7 @@ package models
 
 import (
 	"bytes"
+	"context"
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
@@ -13,6 +14,7 @@ import (
 	txttpl "text/template"
 	"time"
 
+	mjml "github.com/Boostport/mjml-go"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 	"github.com/lib/pq"
@@ -47,6 +49,7 @@ const (
 	CampaignContentTypeRichtext = "richtext"
 	CampaignContentTypeHTML     = "html"
 	CampaignContentTypeMarkdown = "markdown"
+	CampaignContentTypeMJML     = "mjml"
 	CampaignContentTypePlain    = "plain"
 
 	// List.
@@ -556,13 +559,19 @@ func (c *Campaign) CompileTemplate(f template.FuncMap) error {
 		return fmt.Errorf("error compiling base template: %v", err)
 	}
 
-	// If the format is markdown, convert Markdown to HTML.
 	if c.ContentType == CampaignContentTypeMarkdown {
+		// If the format is markdown, convert Markdown to HTML.
 		var b bytes.Buffer
 		if err := markdown.Convert([]byte(c.Body), &b); err != nil {
 			return err
 		}
 		body = b.String()
+	} else if c.ContentType == CampaignContentTypeMJML {
+		// If the format is MJML, compile the mjml template to HTML.
+		body, err = mjml.ToHTML(context.Background(), c.Body, mjml.WithMinify(true))
+		if err != nil {
+			return fmt.Errorf("error compiling MJML: %v", err)
+		}
 	} else {
 		body = c.Body
 	}
@@ -615,6 +624,12 @@ func (c *Campaign) ConvertContent(from, to string) (string, error) {
 			return out, err
 		}
 		out = b.String()
+	} else if from == CampaignContentTypeMJML &&
+		(to == CampaignContentTypeHTML || to == CampaignContentTypeRichtext) {
+		out, err := mjml.ToHTML(context.Background(), c.Body, mjml.WithMinify(true))
+		if err != nil {
+			return out, fmt.Errorf("error compiling MJML: %v", err)
+		}
 	} else {
 		return out, errors.New("unknown formats to convert")
 	}

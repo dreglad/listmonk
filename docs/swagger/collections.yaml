@@ -2093,6 +2093,8 @@ components:
               type: string
             campaigns.markdown:
               type: string
+            campaigns.mjml:
+              type: string
             campaigns.needsSendAt:
               type: string
             campaigns.newCampaign:
@@ -3768,7 +3770,7 @@ components:
           type: string
         content_type:
           type: string
-          enum: [richtext, html, markdown, plain]
+          enum: [richtext, html, markdown, mjml, plain]
         tags:
           type: array
           items:
@@ -3827,7 +3829,7 @@ components:
           type: string
         content_type:
           type: string
-          enum: [richtext, html, markdown, plain]
+          enum: [richtext, html, markdown, mjml, plain]
         tags:
           type: array
           items:
